@@ -1,2 +1,2 @@
 # pygame-pong
-Pong made with pygame for learning
+Pong made with pygame for learning.
