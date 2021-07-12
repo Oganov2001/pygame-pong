@@ -6,18 +6,38 @@ def ball_animation():
     ball.y += ball_speed_y
 
     if ball.top <= 0 or ball.bottom >= screen_height:
+        pygame.mixer.Sound.play(collision_sfx)
         ball_speed_y *= -1
 
+    # Player Score
     if ball.left <= 0:
+        pygame.mixer.Sound.play(score_sfx)
         player_score += 1
         score_time = pygame.time.get_ticks()
 
+    # Opponent Score
     if ball.right >= screen_width:
+        pygame.mixer.Sound.play(score_sfx)
         opponent_score += 1
         score_time = pygame.time.get_ticks()
 
-    if ball.colliderect(player) or ball.colliderect(opponent):
-        ball_speed_x *= -1
+    if ball.colliderect(player) and ball_speed_x > 0:
+        pygame.mixer.Sound.play(collision_sfx)
+        if abs(ball.right - player.left) < 10:
+            ball_speed_x *= -1
+        elif abs(ball.bottom - player.top) < 10 and ball_speed_y > 0:
+            ball_speed_y *= -1
+        elif abs(ball.top - player.bottom) < 10 and ball_speed_y < 0:
+            ball_speed_y *= -1
+
+    if ball.colliderect(opponent) and ball_speed_x < 0:
+        pygame.mixer.Sound.play(collision_sfx)
+        if abs(ball.left - opponent.right) < 10:
+            ball_speed_x *= -1
+        elif abs(ball.bottom - opponent.top) < 10 and ball_speed_y > 0:
+            ball_speed_y *= -1
+        elif abs(ball.top - opponent.bottom) < 10 and ball_speed_y < 0:
+            ball_speed_y *= -1
 
 def player_animation():
     player.y += player_speed
@@ -62,6 +82,7 @@ def ball_restart():
         score_time = None
 
 # General Setup
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -85,6 +106,11 @@ opponent_speed = 7
 player_score = 0
 opponent_score = 0
 game_font = pygame.font.Font(None, 48)
+
+# Sound
+
+collision_sfx = pygame.mixer.Sound("collision.ogg")
+score_sfx = pygame.mixer.Sound("score.ogg")
 
 # Score Timer
 score_time = True
